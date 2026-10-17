@@ -97,7 +97,14 @@ export function pageLink(server, { theme, city, sync }) {
 const fmt = (n) => Number(n || 0).toLocaleString();
 const count = (n, one, many) => `${fmt(n)} ${Number(n) === 1 ? one : many}`;
 
+export function wavesTo(heat, city) {
+  const found = heat && heat.waves ? heat.waves.find((w) => w[0] === city) : null;
+  const n = found ? found[1] : 0;
+  return n ? `${count(n, "wave", "waves")} to ${CITY_BY_ID.get(city).name.toLowerCase()} today` : "";
+}
+
 export function summary(heat) {
   if (!heat) return "";
-  return `${count(heat.total, "machine", "machines")} online · ${count(heat.cities ? heat.cities.length : 0, "city", "cities")}`;
+  const cities = heat.today ? `${count(heat.today.length, "city", "cities")} today` : count(heat.cities ? heat.cities.length : 0, "city", "cities");
+  return `${count(heat.total, "machine", "machines")} online · ${cities}`;
 }

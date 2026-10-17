@@ -6,6 +6,12 @@
 
 <p align="center">A globe in your omarchy bar that puts your machine on the <a href="https://omanow.mark-omarov.workers.dev">omanow</a> map while it's online.</p>
 
+<p align="center">
+  <a href="https://omanow.mark-omarov.workers.dev"><b>Open the map</b></a> ·
+  <a href="https://github.com/mark-omarov/omanow">Source and issues</a> ·
+  <a href="https://plugins.omarchy.org/plugin.html?id=io.github.mark-omarov.omanow">On the plugin marketplace</a>
+</p>
+
 ## Install
 
 ```sh
@@ -52,7 +58,7 @@ To add it to the omarchy menu under Trigger, then Toggle, put this line in `~/.c
 
 ## What it sends
 
-While sharing is on, the plugin sends the city you picked and a random install id once an hour. The server keeps a hash of the id and deletes it an hour after the last check-in, or as soon as you switch sharing off. If the connection drops, the plugin keeps your setting and retries after 1, 2, 4, and up to 30 minutes.
+While sharing is on, the plugin sends the city you picked and a random install id once an hour. The server keeps a hash of the id and deletes it a day after the last check-in, or as soon as you switch sharing off. If the connection drops, the plugin keeps your setting and retries after 1, 2, 4, and up to 30 minutes.
 
 The plugin keeps its settings in `~/.local/state/omanow/state.json`, outside your dotfiles.
 
