@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.mark-omarov.omanow",
   "name": "omanow",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Mark Omarov",
   "license": "MIT",
   "description": "Put this omarchy machine on the omanow map, at city level, while it's online.",
