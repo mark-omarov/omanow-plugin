@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.mark-omarov.omaglobe",
+  "name": "omaglobe",
+  "version": "0.1.0",
+  "author": "Mark Omarov",
+  "license": "MIT",
+  "description": "Put this omarchy machine on the omaglobe map, at city level, while it's online.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "omaglobe",
+    "description": "Show this machine on the omaglobe heatmap at city level while it's online.",
+    "category": "Info",
+    "allowMultiple": false,
+    "defaultSection": "center",
+    "defaults": {
+      "server": ""
+    },
+    "schema": [
+      {
+        "key": "server",
+        "type": "string",
+        "label": "Server",
+        "description": "Leave empty for the public omaglobe. Set http://localhost:8787 to test against a local dev server.",
+        "defaultValue": ""
+      }
+    ]
+  }
+}
