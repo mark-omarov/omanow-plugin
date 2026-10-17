@@ -1,9 +1,9 @@
-// cities.mjs and theme.mjs are copied from @omaglobe/core at build time.
+// cities.mjs and theme.mjs are copied from @omanow/core at build time.
 
 import { CITIES, CITY_BY_ID, nearestCity } from "./cities.mjs";
 import { encodeTheme, parseColorsToml } from "./theme.mjs";
 
-export const DEFAULT_SERVER = "https://omaglobe.mark-omarov.workers.dev";
+export const DEFAULT_SERVER = "https://omanow.mark-omarov.workers.dev";
 export const HEARTBEAT_MS = 3600000;
 
 export function retryDelay(failures) {

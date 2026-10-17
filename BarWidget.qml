@@ -7,13 +7,13 @@ import qs.Ui
 import "model.mjs" as Model
 
 Panel {
-  id: omaglobe
-  moduleName: "io.github.mark-omarov.omaglobe"
-  ipcTarget: "omaglobe"
+  id: omanow
+  moduleName: "io.github.mark-omarov.omanow"
+  ipcTarget: "omanow"
   manageIpc: false
 
   readonly property string home: Quickshell.env("HOME")
-  readonly property string stateDir: home + "/.local/state/omaglobe"
+  readonly property string stateDir: home + "/.local/state/omanow"
   readonly property string server: Model.serverUrl(setting("server", ""))
   readonly property color foreground: bar ? bar.foreground : Color.foreground
   readonly property color dim: Qt.darker(foreground, 1.55)
@@ -55,7 +55,7 @@ Panel {
         failed(xhr.status, data && data.error)
       }
     }
-    xhr.open("POST", omaglobe.server + path)
+    xhr.open("POST", omanow.server + path)
     xhr.setRequestHeader("content-type", "application/json")
     xhr.send(JSON.stringify(body))
   }
@@ -63,10 +63,10 @@ Panel {
   function heartbeat() {
     if (!online || installId === "" || city === "") return
     post("/api/online", { id: installId, city: city }, function (data) {
-      omaglobe.failures = 0
-      omaglobe.error = ""
-      omaglobe.heat = data ? data.heat : null
-      omaglobe.syncPage()
+      omanow.failures = 0
+      omanow.error = ""
+      omanow.heat = data ? data.heat : null
+      omanow.syncPage()
       beat.restart()
     }, function (status, message) {
       if (status === 429) {
@@ -74,9 +74,9 @@ Panel {
         retry.restart()
         return
       }
-      omaglobe.failures += 1
-      omaglobe.error = status >= 400 && status < 500 ? (message || "HTTP " + status) : ""
-      retry.interval = Model.retryDelay(omaglobe.failures)
+      omanow.failures += 1
+      omanow.error = status >= 400 && status < 500 ? (message || "HTTP " + status) : ""
+      retry.interval = Model.retryDelay(omanow.failures)
       retry.restart()
     })
   }
@@ -89,9 +89,9 @@ Panel {
     var xhr = new XMLHttpRequest()
     xhr.onreadystatechange = function () {
       if (xhr.readyState !== XMLHttpRequest.DONE || xhr.status !== 200) return
-      try { omaglobe.heat = JSON.parse(xhr.responseText) } catch (e) {}
+      try { omanow.heat = JSON.parse(xhr.responseText) } catch (e) {}
     }
-    xhr.open("GET", omaglobe.server + "/api/heat")
+    xhr.open("GET", omanow.server + "/api/heat")
     xhr.send()
   }
 
@@ -144,47 +144,47 @@ Panel {
   }
 
   IpcHandler {
-    target: "omaglobe"
-    function open(): void { omaglobe.open() }
-    function close(): void { omaglobe.close() }
-    function toggle(): void { omaglobe.toggle() }
+    target: "omanow"
+    function open(): void { omanow.open() }
+    function close(): void { omanow.close() }
+    function toggle(): void { omanow.toggle() }
     function toggleSharing(): string {
-      omaglobe.setOnline(!omaglobe.online)
-      return omaglobe.online ? "sharing " + omaglobe.city : "off"
+      omanow.setOnline(!omanow.online)
+      return omanow.online ? "sharing " + omanow.city : "off"
     }
-    function status(): string { return omaglobe.online ? "sharing " + omaglobe.city : "off" }
+    function status(): string { return omanow.online ? "sharing " + omanow.city : "off" }
   }
 
   // Kept out of shell.json so a published dotfiles repo doesn't carry it.
   FileView {
     id: stateFile
-    path: omaglobe.stateDir + "/state.json"
+    path: omanow.stateDir + "/state.json"
     printErrors: false
     onLoaded: {
       var s = Model.parseState(text())
-      omaglobe.city = s.city
-      omaglobe.online = s.online
-      omaglobe.installId = s.id !== "" ? s.id : Model.newId()
-      omaglobe.syncId = s.sync
-      omaglobe.loaded = true
-      omaglobe.heartbeat()
+      omanow.city = s.city
+      omanow.online = s.online
+      omanow.installId = s.id !== "" ? s.id : Model.newId()
+      omanow.syncId = s.sync
+      omanow.loaded = true
+      omanow.heartbeat()
     }
     onLoadFailed: {
-      omaglobe.installId = Model.newId()
-      omaglobe.loaded = true
+      omanow.installId = Model.newId()
+      omanow.loaded = true
       mkdir.running = true
     }
   }
 
   Process {
     id: mkdir
-    command: ["mkdir", "-p", omaglobe.stateDir]
-    onExited: omaglobe.save()
+    command: ["mkdir", "-p", omanow.stateDir]
+    onExited: omanow.save()
   }
 
   FileView {
     id: weatherFile
-    path: omaglobe.home + "/.local/state/omarchy/settings/weather.json"
+    path: omanow.home + "/.local/state/omarchy/settings/weather.json"
     printErrors: false
     blockLoading: true
   }
@@ -209,10 +209,10 @@ Panel {
 
   FileView {
     id: themeFile
-    path: omaglobe.home + "/.local/state/omarchy/current/theme/colors.toml"
+    path: omanow.home + "/.local/state/omarchy/current/theme/colors.toml"
     printErrors: false
     blockLoading: true
-    onLoaded: if (omaglobe.syncId !== "") omaglobe.post("/api/sync", { sync: omaglobe.syncId, theme: Model.themeHex(text()) }, null, null)
+    onLoaded: if (omanow.syncId !== "") omanow.post("/api/sync", { sync: omanow.syncId, theme: Model.themeHex(text()) }, null, null)
   }
 
   Connections {
@@ -224,36 +224,36 @@ Panel {
   Timer {
     id: beat
     interval: Model.HEARTBEAT_MS
-    running: omaglobe.online && omaglobe.loaded && omaglobe.failures === 0
+    running: omanow.online && omanow.loaded && omanow.failures === 0
     repeat: true
-    onTriggered: omaglobe.heartbeat()
+    onTriggered: omanow.heartbeat()
   }
 
   Timer {
     id: retry
     repeat: false
-    onTriggered: omaglobe.heartbeat()
+    onTriggered: omanow.heartbeat()
   }
 
   BarIconButton {
     id: button
     anchors.fill: parent
-    bar: omaglobe.bar
+    bar: omanow.bar
     text: "󰇧"
-    dimmed: !omaglobe.online
-    tooltipText: omaglobe.online ? "omaglobe · sharing " + Model.cityLabel(omaglobe.city) : "omaglobe · off"
+    dimmed: !omanow.online
+    tooltipText: omanow.online ? "omanow · sharing " + Model.cityLabel(omanow.city) : "omanow · off"
     onPressed: function (b) {
-      if (b === Qt.RightButton) omaglobe.openMap()
-      else omaglobe.toggle()
+      if (b === Qt.RightButton) omanow.openMap()
+      else omanow.toggle()
     }
   }
 
   KeyboardPanel {
     id: panel
     anchorItem: button
-    owner: omaglobe
-    bar: omaglobe.bar
-    open: omaglobe.opened
+    owner: omanow
+    bar: omanow.bar
+    open: omanow.opened
     focusTarget: keyCatcher
     contentWidth: panel.fittedContentWidth(Style.space(340))
     contentHeight: panel.fittedContentHeight(column.implicitHeight, Style.space(420))
@@ -261,15 +261,15 @@ Panel {
     PanelKeyCatcher {
       id: keyCatcher
       anchors.fill: parent
-      onCloseRequested: omaglobe.close()
-      onTabRequested: function (direction) { omaglobe.switchPanel(direction) }
-      onActivateRequested: omaglobe.setOnline(!omaglobe.online)
+      onCloseRequested: omanow.close()
+      onTabRequested: function (direction) { omanow.switchPanel(direction) }
+      onActivateRequested: omanow.setOnline(!omanow.online)
       onTextKey: function (t) {
         var key = String(t).toLowerCase()
-        if (key === "s" || key === " ") omaglobe.setOnline(!omaglobe.online)
-        else if (key === "l") omaglobe.locate(false)
-        else if (key === "o") omaglobe.openMap()
-        else if (key === "?") omaglobe.helpOpen = !omaglobe.helpOpen
+        if (key === "s" || key === " ") omanow.setOnline(!omanow.online)
+        else if (key === "l") omanow.locate(false)
+        else if (key === "o") omanow.openMap()
+        else if (key === "?") omanow.helpOpen = !omanow.helpOpen
       }
 
       Column {
@@ -280,13 +280,13 @@ Panel {
         PanelHero {
           id: hero
           width: parent.width
-          title: "omaglobe"
-          meta: !omaglobe.online ? "off"
-            : omaglobe.failures > 0 ? "reconnecting"
-            : "sharing " + Model.cityLabel(omaglobe.city).toLowerCase()
-          foreground: omaglobe.foreground
-          fontFamily: omaglobe.fontFamily
-          iconOpacity: omaglobe.online ? 1.0 : 0.5
+          title: "omanow"
+          meta: !omanow.online ? "off"
+            : omanow.failures > 0 ? "reconnecting"
+            : "sharing " + Model.cityLabel(omanow.city).toLowerCase()
+          foreground: omanow.foreground
+          fontFamily: omanow.fontFamily
+          iconOpacity: omanow.online ? 1.0 : 0.5
           iconComponent: Component {
             Text {
               text: "󰇧"
@@ -305,31 +305,31 @@ Panel {
                 foreground: hero.foreground
                 fontFamily: hero.fontFamily
                 anchors.verticalCenter: parent.verticalCenter
-                onClicked: omaglobe.helpOpen = !omaglobe.helpOpen
+                onClicked: omanow.helpOpen = !omanow.helpOpen
               }
 
               ToggleSwitch {
-                checked: omaglobe.online
+                checked: omanow.online
                 foreground: hero.foreground
                 anchors.verticalCenter: parent.verticalCenter
-                onToggled: omaglobe.setOnline(!omaglobe.online)
+                onToggled: omanow.setOnline(!omanow.online)
               }
             }
           }
         }
 
         Text {
-          visible: omaglobe.helpOpen
+          visible: omanow.helpOpen
           width: parent.width
           text: "While on, this machine's city and a random install id are sent once an hour. Nothing else, never your location. It drops off the map about an hour after it stops, or right away when you switch it off. A city shows on the map once 3 machines are there."
-          color: omaglobe.dim
-          font.family: omaglobe.fontFamily
+          color: omanow.dim
+          font.family: omanow.fontFamily
           font.pixelSize: Style.font.caption
           wrapMode: Text.WordWrap
         }
 
         Flow {
-          visible: omaglobe.helpOpen
+          visible: omanow.helpOpen
           width: parent.width
           spacing: Style.space(12)
 
@@ -339,8 +339,8 @@ Panel {
             Text {
               required property var modelData
               text: modelData[0] + " " + modelData[1]
-              color: omaglobe.dim
-              font.family: omaglobe.fontFamily
+              color: omanow.dim
+              font.family: omanow.fontFamily
               font.pixelSize: Style.font.caption
             }
           }
@@ -349,19 +349,19 @@ Panel {
         Text {
           visible: text !== ""
           width: parent.width
-          text: Model.summary(omaglobe.heat)
-          color: omaglobe.foreground
-          font.family: omaglobe.fontFamily
+          text: Model.summary(omanow.heat)
+          color: omanow.foreground
+          font.family: omanow.fontFamily
           font.pixelSize: Style.font.bodySmall
           wrapMode: Text.WordWrap
         }
 
         Text {
-          visible: omaglobe.error !== ""
+          visible: omanow.error !== ""
           width: parent.width
-          text: omaglobe.error
-          color: omaglobe.bar ? omaglobe.bar.urgent : Color.urgent
-          font.family: omaglobe.fontFamily
+          text: omanow.error
+          color: omanow.bar ? omanow.bar.urgent : Color.urgent
+          font.family: omanow.fontFamily
           font.pixelSize: Style.font.bodySmall
           wrapMode: Text.WordWrap
         }
@@ -373,13 +373,13 @@ Panel {
           SearchableDropdown {
             id: picker
             width: parent.width - locateButton.width - parent.spacing
-            Component.onCompleted: value = omaglobe.city
+            Component.onCompleted: value = omanow.city
             label: "city"
-            fontFamily: omaglobe.fontFamily
+            fontFamily: omanow.fontFamily
             placeholderText: "search cities..."
             options: Model.cityOptions()
-            triggerLabel: omaglobe.city !== "" ? Model.cityLabel(omaglobe.city) : "pick your city"
-            onChanged: function (value) { omaglobe.pick(value) }
+            triggerLabel: omanow.city !== "" ? Model.cityLabel(omanow.city) : "pick your city"
+            onChanged: function (value) { omanow.pick(value) }
           }
 
           PanelActionButton {
@@ -388,19 +388,19 @@ Panel {
             size: Style.spacing.controlHeight
             iconText: "󰆤"
             tooltipText: "use my location"
-            foreground: omaglobe.foreground
-            fontFamily: omaglobe.fontFamily
+            foreground: omanow.foreground
+            fontFamily: omanow.fontFamily
             bordered: true
-            onClicked: omaglobe.locate(false)
+            onClicked: omanow.locate(false)
           }
         }
 
         Button {
           width: parent.width
           text: "open the map"
-          fontFamily: omaglobe.fontFamily
+          fontFamily: omanow.fontFamily
           bordered: true
-          onClicked: omaglobe.openMap()
+          onClicked: omanow.openMap()
         }
       }
     }
