@@ -13,6 +13,8 @@ omarchy plugin add https://github.com/mark-omarov/omanow-plugin --enable
 omarchy bar move io.github.mark-omarov.omanow --after omarchy.indicators
 ```
 
+omanow is also listed on the [omarchy plugin marketplace](https://plugins.omarchy.org/plugin.html?id=io.github.mark-omarov.omanow).
+
 The globe stays hidden like the indicators. Hover the middle of your bar to find it.
 
 ## Use
