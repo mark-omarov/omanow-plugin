@@ -31,6 +31,7 @@ const RAW = [
   ["Luxembourg", "LU", 49.61, 6.13, 1], ["Paris", "FR", 48.86, 2.35, 6], ["Lyon", "FR", 45.76, 4.84, 3],
   ["Marseille", "FR", 43.3, 5.37, 2], ["Toulouse", "FR", 43.6, 1.44, 2], ["Bordeaux", "FR", 44.84, -0.58, 2],
   ["Nantes", "FR", 47.22, -1.55, 1], ["London", "GB", 51.51, -0.13, 8], ["Manchester", "GB", 53.48, -2.24, 3],
+  ["Cambridge", "GB", 52.21, 0.12, 1],
   ["Edinburgh", "GB", 55.95, -3.19, 2], ["Bristol", "GB", 51.45, -2.59, 2], ["Dublin", "IE", 53.35, -6.26, 3],
   ["Madrid", "ES", 40.42, -3.7, 4], ["Barcelona", "ES", 41.39, 2.17, 5], ["Valencia", "ES", 39.47, -0.38, 2],
   ["Seville", "ES", 37.39, -5.98, 1], ["Lisbon", "PT", 38.72, -9.14, 4], ["Porto", "PT", 41.15, -8.61, 2],
